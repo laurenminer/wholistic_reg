@@ -1,0 +1,17 @@
+[project]
+name = "wholistic-reg"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "wholistic-registration",
+]
+
+[tool.uv.workspace]
+members = [
+    "wholistic_registration",
+]
+
+[tool.uv.sources]
+wholistic-registration = { workspace = true }

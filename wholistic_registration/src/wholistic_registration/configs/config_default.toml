@@ -1,0 +1,191 @@
+[MetaData]
+#Params:
+#   -zRatio
+#       The ratio between z and x/y spacing
+#   -SIZE
+#       The size of the data in [frames, z_slices, channels, height, width]
+#   -frames
+#       The total number of frames in the dataset
+#   -nchannels
+#       The number of channels in the dataset
+#   -Dim
+#       The dimension of a single frame: 3 for 3D (Z,Y,X), 2 for 2D (Y,X)
+#   -voxelsize
+#       The voxel size in [x, y, z] directions (in microns)
+#   -fps
+#       The frame rate (frames per second)
+#   -spacing_x
+#       The spacing in x direction (microns)
+#   -spacing_y
+#       The spacing in y direction (microns)
+#   -spacing_z
+#       The spacing in z direction (microns)
+zRatio=1
+SIZE=[256,256,13]
+frames=1
+nchannels=2
+Dim=3
+voxelsize=[0.325,0.325,9.0]
+fps=0.25
+spacing_x=0.325
+spacing_y=0.325
+spacing_z=9.0
+
+[downsample]
+#Params:
+#   -downsampleXY
+#       The coefficient of the downsampling on X or Y dimension.
+#       If downsampleX = 4 & origin shape of 1 slice is (X,Y), then after downsampleing the shape should be (X/4,Y/4)
+#   -downsample Z
+#       An list of the z silces we will use.
+#       If downsampleZ=[4,5,6,7], we will use the 5th, 6th, 7th, 8th silces of the whole data.
+#       If downsampleZ=None, we will use all of the z slices 
+downsampleXY=1
+downsampleZ=[0]
+
+[frames]
+#Params:
+#   -frame_downsample
+#       We will process the dataset every {frame_downsample} frames
+#       e.g.: frame_downsample=3, it means we will process frame[0], frame[3], frame[6], and so on.
+#   -frames
+#       The frame we will process, the default is all the frames, you could also provide a input like: (t0,t1),
+#       and we will process frame[t0] ~ frame[t1] (beginning at 0), it will also be influenced by frame_downsample
+#Example:
+#   frame_downsample=2, frames=(0,999)
+#   Then we will process the frame:0, 2, 4, 6, ...,998 (total 500 frames)
+frame_downsample=1
+frames=[0]
+
+[file_path]
+#Params:
+#   -input_path
+#       The filepath of the input file. This file should be .nd2 format
+#   -output_path
+#       The filepath of the output file. The output file may be .zarr format    
+input_path=""
+registrated_path=""
+mask_path=""
+
+
+[channels]
+#Params:
+#   -dual_channel
+#       Whether use two channels to do registration
+#       If true,we will use the "membrane_channel+k*function(Ca_channel)" to do registration
+#   -function
+#       The method we process the Ca_channel.It can be "sqrt","log2","log10" or "raw"
+#       "sqrt": square root
+#       "log2": log2(1+x)
+#       "log10": log10(1+x)
+#       "raw": x
+#   -k
+#       The coefficient multiplied after the transformation of Ca channel data:
+#       the larger this value, the greater the proportion of the calcium channel, making it more susceptible to changes in the Ca channel.
+#Example:
+#   1.
+#       dual_channel=true
+#       function="raw"
+#       k=0.3
+#   2.
+#       dual_channel=true
+#       function="log10"
+#       k=300
+dual_channel=true
+function="log10"
+k=250
+
+[reference]
+#Params:
+#   -pick_reference_auto
+#       Whether pick the reference image from moving image
+#       If true, it will pick the reference image from the moving video each several frames
+#       If false, you need to give a reference image
+#   -chunk_size
+#       The size of frames we will use to update the reference
+pick_reference_auto=false
+chunk_size=50
+
+[preprocess]
+#Params:
+#   -normalize_to_0_255
+#       Whether normalize the image to [0,255]
+normalize_to_0_255=false
+
+[mask]
+#Params:
+#   -thresFactor
+#       The threshold value
+#       pixels greater than thresFactor times the standard deviation are regarded as outliers, and we will initially mask these points.
+#   -maskRange
+#       The pixel range of the mask region
+#       Only the pixels in the maskRange will be masked.
+#       Remark: This is the absolute value of the pixels, so it depends on the bit depth of the image's pixels. 
+#       For example, if yo image range is [0, 255], then your reasonable maskRange should be at least a subset of [0, 255]. 
+#       If you don't want to filter out any mask points, you can set this range to be very large.
+thresFactor=5
+maskRange=[5,4000]
+
+[pyramid]
+#Params:
+#   -layer
+#       The layer of pyramid
+#       A larger layer means that the algorithm is better at capturing large-scale displacements
+#       and correspondingly, its ability to capture some small deformations will be slightly diminished.
+#   -r
+#       The radius of the patch
+#       The size of each patch is (2r+1)*(2r+1), and each patch has one control point.
+#       A smaller r means more control points and more easier to capture noise
+#   -iter
+#       The num of maximum iterations of each layer
+#   -smoothPenalty
+#       The coefficient of the smoothness penalty term
+#       A larger smoothPenalty means more smooth motion we will get and correspondingly the error of intensity will increase
+layer=1
+r=5
+iter=10
+tolerance=0.001
+smoothPenalty=0.08
+
+[ReliableAnalysis]
+#Params:
+#   -patch_sigma : float
+#       Gaussian smoothing applied to the image before computing patch-based SSDs.
+#       Larger values suppress noise but also blur fine structures.
+#   -offset_radius : int (pixels)
+#      Distance of neighborhood offsets for MIND descriptor computation.
+#      Determines the size of the local neighborhood used to capture structure patterns.
+#   -norm_percentile : float (0-100)
+#      Percentile used to normalize the difference map.
+#      Only pixels within structured regions are considered.
+#      Controls the sensitivity of the resulting misalignment map (lower → more sensitive).
+#   -structure_tau : float (0-1)
+#       Structure activation threshold for soft gating.
+#       Controls the location of the sigmoid transition applied to the
+#       MIND-derived structure map. Pixels with structure response
+#       S ≳ structure_tau are treated as foreground (structurally meaningful),
+#       while S ≲ structure_tau are progressively suppressed as background.
+#       Larger values make the mask more conservative, retaining only
+#       high-structure regions.
+#   -structure_beta : float
+#       Softness (slope) parameter of the structure sigmoid.
+#       Determines how sharp the transition is around structure_tau.
+#       Smaller values yield a steeper, near-binary mask (hard gating),
+#       while larger values produce a smoother, more tolerant weighting
+#       that gradually attenuates low-structure regions.
+patch_sigma=3.0
+offset_radius=5
+structure_tau=0.5
+structure_beta=0.1
+eps=1e-6
+
+
+[processing]
+#Params:
+#   -batch_size
+#       The size of how many frames we will process in one time, if this value is setted as a large number, it will occupy more memory but will run faster
+batch_size=50
+
+[save_config]
+save_ref=true
+save_motion=false
