@@ -9,12 +9,12 @@ from wholistic_registration.v2.config import (
 )
 
 config = RegistrationConfig(
-    input_path="./results/2026-03-02-01.zarr",
-    output_dir="./results/2026-03-02-01_registered_3d",
+    input_path="./results/2026-03-02-01_test10.zarr",
+    output_dir="./results/2026-03-02-01_test10_registered",
     downsample=DownsampleConfig(
-        xy=2,
+        xy=4,
         z_slices=None,
-        t_chunk=20,
+        t_chunk=5,
     ),
     channels=ChannelConfig(
         dual_channel=False,
@@ -22,9 +22,9 @@ config = RegistrationConfig(
         calcium_channel=0,
     ),
     reference=ReferenceConfig(
-        window_size=40,
-        initial_frames=80,
-        max_correlation_frames=50,
+        window_size=10,
+        initial_frames=10,
+        max_correlation_frames=10,
     ),
     pyramid=PyramidConfig(
         layers=1,

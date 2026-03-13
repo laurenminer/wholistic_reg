@@ -316,7 +316,7 @@ class ZarrReader(BaseReader):
         root = self._root
         
         # Try to find the main data array
-        if isinstance(root, _zarr.hierarchy.Group):
+        if isinstance(root, _zarr.Group):
             # Look for common array names
             for name in ['data', 'membrane', 'calcium', '0']:
                 if name in root:
