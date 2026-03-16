@@ -8,6 +8,8 @@ wheels/
 
 # Virtual environments
 .venv
+.python-version
+uv.lock
 
 # Output data
 results/
