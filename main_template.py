@@ -21,7 +21,7 @@ from wholistic_registration.v2.io import BaseReader, Metadata
 class FlavellZarrReader(BaseReader):
     def __init__(self, path: str | Path, metadata: Metadata):
         super().__init__(path)
-        self._data_arr = np.asarray(zarr.load(str(self.path), mode='r'))
+        self._data_arr = np.asarray(zarr.load(self.path))
         self._metadata = metadata
     
     @property
