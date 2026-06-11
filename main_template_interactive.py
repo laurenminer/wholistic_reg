@@ -45,8 +45,8 @@ class FlavellZarrReader(BaseReader):
 
 #%%
 
-ZARR_DATA_PATH = "/home/lauren/wholistic_preprocessing/preprocessed/2026-03-02-01.zarr"
-OUTPUT_DIR = "/home/lauren/wholistic_reg/ProcessedData/2026-03-02-01"
+ZARR_DATA_PATH = "/home/lauren/wholistic_preprocessing/preprocessed/2026-03-03-05.zarr"
+OUTPUT_DIR = "/home/lauren/wholistic_reg/ProcessedData/2026-03-03-05"
 BIN_FACTOR = 3 # set to bin factor used during preprocessing
 GPU_ID = 2 # This could also be set with CUDA_VISIBLE_DEVICES
 
@@ -59,7 +59,7 @@ config = RegistrationConfig(
         t_chunk=20,
     ),
     channels=ChannelConfig(
-        dual_channel=False,
+        dual_channel=True,
         membrane_channel=1,
         calcium_channel=0,
     ),

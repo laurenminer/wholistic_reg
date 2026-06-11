@@ -16,3 +16,6 @@ results/
 
 # LLM
 .claude/
+*.tif
+# Output data (per-dataset configs + QC media)
+ProcessedData/
